@@ -10,6 +10,17 @@ The README's in each folder contain the report about the rootkit sample.
 |[Puszek](Puszek/)|rootkit which can log requests and prevent itself from being rmmod'd|[Eternal's repo](https://github.com/Eterna1/puszek-rootkit)|
 |[Reptile](Reptile/)|rootkit which can give root privs to users and a backdoor| [f0rb1dd3n's repo](https://github.com/f0rb1dd3n/Reptile)|
 
+## Features Descriptions
+
+|Name|Short Description|Rootkits|links to code samples|
+|:-:|:-:|:-:|:-:|
+|Syscall Table Hooking (1)|Modify CR0 to remove write protect bit and change syscall table|[Puszek](Puszek/)||
+|Syscall Table Hooking (2)|Make Syscall table writeable and then modify it|[Puszek](Puszek/)||
+|Hide Rootkit|Hook open syscall and modify the contents of the files (/proc/modules) which contain the name of the rooktit|[Puszek](Puszek/)||
+|Unable to rmmod module|Hook open syscall and make it not possible to open the rootkit module|[Puszek](Puszek/)||
+|Hide Files|Hook `new_sys_getdents` and `new_sys_getdents64` syscalls and modify it's result to hide files matching a specified prefix|[Puszek](Puszek/)||
+|Intercept Http Requests and Leak Data|Hook `send_to` syscall and the tcp data sent is checked for presence of headers. This is then searchd for presence of passwords etc|[Puszek](Puszek/)||
+
 
 ## Test Environment
 
