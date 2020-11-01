@@ -14,6 +14,7 @@ The README's in each folder contain the report about the rootkit sample.
 
 |Name|Short Description|Rootkits|links to code samples|
 |:-:|:-:|:-:|:-:|
+|Finding Syscall Table address| Search memory for the pointer table! using a address of syscall function (eg. close) as reference|[Puszek](Puszek/)| [In Puszek](Puszek/rootkit.c#L1004)|
 |Syscall Table Hooking (1)|Modify CR0 to remove write protect bit and change syscall table|[Puszek](Puszek/)| [In Puszek](Puszek/rootkit.c#L1081)|
 |Syscall Table Hooking (2)|Make Syscall table writeable and then modify it|[Puszek](Puszek/)| [In Puszek](Puszek/rootkit.c#L133) |
 |Hide Rootkit|Hook open syscall and modify the contents of the files (/proc/modules) which contain the name of the rooktit|[Puszek](Puszek/)| [In Puszek](Puszek/rootkit.c#L783) |
