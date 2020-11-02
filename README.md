@@ -3,15 +3,15 @@
 A collection of Linux kernel rootkits found across the internet taken and put together, with a short report on how they work.
 The README's in each folder contain the report about the rootkit sample.
 
-## Rootkits
-
-If you plan to download these 
+## Rootkits 
 
 |Name|Short Description|link to orignal repo|
 |:-:|:-:|:-:|
 |[Puszek](Puszek/)|rootkit which can log requests and prevent itself from being rmmod'd|[Eternal's repo](https://github.com/Eterna1/puszek-rootkit)|
 |[Reptile](Reptile/)|rootkit which can give root privs to users and a backdoor| [f0rb1dd3n's repo](https://github.com/f0rb1dd3n/Reptile)|
 |[Khook](Khook/)| (Not a rootkit) but an engine that can be used to hook functions, also mentioned here since it's used by rootkits to hook functions| [milabs's repo](https://github.com/milabs/khook))|
+
+If you plan to download the latest version of these rootkits please download them from their original repo, as it would be the latest version.
 
 ## Features Descriptions
 
