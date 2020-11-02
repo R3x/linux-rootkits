@@ -5,6 +5,8 @@ The README's in each folder contain the report about the rootkit sample.
 
 ## Rootkits
 
+If you plan to download these 
+
 |Name|Short Description|link to orignal repo|
 |:-:|:-:|:-:|
 |[Puszek](Puszek/)|rootkit which can log requests and prevent itself from being rmmod'd|[Eternal's repo](https://github.com/Eterna1/puszek-rootkit)|

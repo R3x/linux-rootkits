@@ -1,110 +1,58 @@
-# 0
+# Khook Hooking engine
 
-KHOOK (خوک) - Linux Kernel hooking engine.
+Linux kernel hooking engine allows you to hook into any function in the kernel space and then run a function of your choosing whenever the hooked function is called.
 
-# Usage
+## Implementation details
 
-Include KHOOK engine:
-~~~
-#include "khook/engine.c"
-~~~
+### Getting things ready
 
-Add the following line to the KBuild/Makefile:
-~~~
-ldflags-y += -T$(src)/khook/engine.lds (use LDFLAGS for old kernels)
-~~~
+For each hook that was defined by the user, khook tries to find the address of the function
 
-Use `khook_init()` and `khook_cleanup()` to initalize and de-initialize hooking engine.
+the relevant code is - 
 
-# Examples
-
-## Hooking of generic kernel functions 
-
-An example of hooking a kernel function with known prototype (function is defined in `linux/fs.h`):
-~~~
-#include <linux/fs.h> // has inode_permission() proto
-KHOOK(inode_permission);
-static int khook_inode_permission(struct inode *inode, int mask)
+```c
+static void khook_resolve(void)
 {
-        int ret = 0;
-        ret = KHOOK_ORIGIN(inode_permission, inode, mask);
-        printk("%s(%p, %08x) = %d\n", __func__, inode, mask, ret);
-        return ret;
+	khook_t *p;
+	KHOOK_FOREACH_HOOK(p) {
+		p->target.addr = (void *)khook_lookup_name(p->target.name);
+		if (!p->target.addr) printk("khook: failed to lookup %s symbol\n", p->target.name);
+	}
 }
-~~~
+```
 
-An example of hooking a kernel function with custom prototype (function is not defined in `linux/binfmts.h`):
-~~~
-#include <linux/binfmts.h> // has no load_elf_binary() proto
-KHOOK_EXT(int, load_elf_binary, struct linux_binprm *);
-static int khook_load_elf_binary(struct linux_binprm *bprm)
+Here, what `khook_lookup_name` does is it searches kallsyms for the function and returns the address. (if kprobes are enabled that can also be used)
+
+Note: Here there is no direct syscall table overwrite, we just overwrite the function that implements the syscall.
+
+Once all the addresses are resolved khook engine starts the process of rewriting the functions. Now, since it plans to add assembly instructions the process is architecture specific.
+
+```c
+static int khook_sm_init_hooks(void *arg)
 {
-        int ret = 0;
-        ret = KHOOK_ORIGIN(load_elf_binary, bprm);
-        printk("%s(%p) = %d (%s)\n", __func__, bprm, ret, bprm->filename);
-        return ret;
+	khook_t *p;
+	KHOOK_FOREACH_HOOK(p) {
+		if (!p->target.addr) continue;
+		khook_arch_sm_init_one(p);
+	}
+	return 0;
 }
-~~~
+```
 
-Starting from [a6e7f394](https://github.com/milabs/khook/commit/a6e7f3945a4eebb811818f62bd2cf2ea50f609c0) it's possible to hook a function with big amount of arguments. This requires for `KHOOK` to make a local copy of N (hardcoded as 8) arguments which are passed through the stack before calling the handler function.
+### The hooking part
 
-An example of hooking 12 argument function `scsi_execute` is shown below (see [#5](/../../issues/5) for details):
+The [hooking function](/Khook/khook/x86/hook.c#L75) 
+- Given an address khook initially checks if there is already a jump at that address
+- Khook uses an stub to do the hooking process. it overwrites the address of a function to jump to the stub of a function. (Amazing well implemented macros to create stubs per function).	- Each Stub contains a pointer to the original function and also a counter which counts the number of uses.
+  - When a function is called the use count is incremented and similarly decremented once the call ends. (it's similar to a semaphore)
+  - The code for the stub can be found [here](khook/x86/stub.S)
+  - The stub contains a place holder `0xcacacaca` which is then replaced with the address that we need.
+  - The In-kernel Dissambler is used for finding length of instruction. (unsure of how this works!)
+- In the stub, khook places a jump to the original function. (This is in writable memory)
+- Now, we need to replace the original function with a jump to the stub, for this we replace the write bit on the CRO register.
+- The X bytes overwritten are stored and reused, so that we don't loose any bytes.
 
-~~~
-
-#include <scsi/scsi_device.h>
-KHOOK(scsi_execute);
-static int khook_scsi_execute(struct scsi_device *sdev, const unsigned char *cmd, int data_direction, void *buffer, unsigned bufflen, unsigned char *sense, struct scsi_sense_hdr *sshdr, int timeout, int retries, u64 flags, req_flags_t rq_flags, int *resid)
-{
-        int ret = 0;
-        ret = KHOOK_ORIGIN(scsi_execute, sdev, cmd, data_direction, buffer, bufflen, sense, sshdr, timeout, retries, flags, rq_flags, resid);
-        printk("%s(%lx, %lx, %lx, %lx, %lx, %lx, %lx, %lx, %lx, %lx, %lx, %lx) = %d\n", __func__, (long)sdev, (long)cmd, (long)data_direction, (long)buffer, (long)bufflen, (long)sense, (long)sshdr, (long)timeout, (long)retries, (long)flags, (long)rq_flags, (long)resid ,ret);
-        return ret;
-}
-
-~~~
-
-## Hooking of system calls (handler functions)
-
-An example of hooking `kill(2)` system call handler (see [#3](/../../issues/3) for the details):
-~~~
-// long sys_kill(pid_t pid, int sig)
-KHOOK_EXT(long, sys_kill, long, long);
-static long khook_sys_kill(long pid, long sig) {
-        printk("sys_kill -- %s pid %ld sig %ld\n", current->comm, pid, sig);
-        return KHOOK_ORIGIN(sys_kill, pid, sig);
-}
-
-// long sys_kill(const struct pt_regs *regs) -- modern kernels
-KHOOK_EXT(long, __x64_sys_kill, const struct pt_regs *);
-static long khook___x64_sys_kill(const struct pt_regs *regs) {
-        printk("sys_kill -- %s pid %ld sig %ld\n", current->comm, regs->di, regs->si);
-        return KHOOK_ORIGIN(__x64_sys_kill, regs);
-}
-~~~
-
-# Features
-
-- x86 only
-- 2.6.33+ kernels
-- use of in-kernel length disassembler
-
-# How it works?
-
-The diagram below illustrates the call to function `X` without hooking:
-
-~~~
-CALLER
-| ...
-| CALL X -(1)---> X
-| ...  <----.     | ...
-` RET       |     ` RET -.
-            `--------(2)-'
-~~~
-
-The diagram below illustrates the call to function `X` when `KHOOK` is used:
-
-~~~
+```
 CALLER
 | ...
 | CALL X -(1)---> X
@@ -118,14 +66,9 @@ CALLER
             `------------|----|-------(8)-'              '-------(7)-'    |                         |
                          |    `-------------------------------------------|---------------------(5)-'
                          `-(6)--------------------------------------------'
-~~~
+```
+^ diagram shamelessly copied from the khook README
 
-# License
+### Misc stuff
 
-This software is licensed under the GPL.
-
-# Author
-
-[Ilya V. Matveychikov](https://github.com/milabs)
-
-2018, 2019, 2020
+Apparently module_alloc memory isn't executable by default and has to be made executable.
