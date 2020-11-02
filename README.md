@@ -18,7 +18,7 @@ If you plan to download the latest version of these rootkits please download the
 |Name|Short Description|Rootkits|links to code samples|
 |:-:|:-:|:-:|:-:|
 |Finding Syscall Table address (1)| Search memory for the pointer table! using a address of syscall function (eg. close) as reference|[Puszek](Puszek/)| [In Puszek](Puszek/rootkit.c#L1004)|
-|Function Hooking (1)| Get the address of the function to be hooked and then Modify CR0 to remove write protect bit and then add a jump instruction to the hooked function| [Khook](khook/) and [Reptile (uses Khook)](Reptile/) | [in Khook](Khook/x86/hook.c#L75) and [detailed explanation](Khook/Readme.md)|
+|Function Hooking (1)| Get the address of the function to be hooked and then Modify CR0 to remove write protect bit and then add a jump instruction to the hooked function| [Khook](KHmhook/) and [Reptile (uses Khook)](Reptile/) | [in Khook](Khook/x86/hook.c#L75) and [detailed explanation](Khook/README.md)|
 |Syscall Table Hooking (1)|Modify CR0 to remove write protect bit and change syscall table|[Puszek](Puszek/)|[In Puszek](Puszek/rootkit.c#L1081)|
 |Syscall Table Hooking (2)|Make Syscall table writeable and then modify it|[Puszek](Puszek/)| [In Puszek](Puszek/rootkit.c#L133)|
 |Syscall Table Hooking (3)|Hook the syscall functions by using the Function Hooking(1) Technique| [Reptile (uses Khook)](Reptile/)| [In Reptile](Reptile/kernel/main.c#L76) | 
