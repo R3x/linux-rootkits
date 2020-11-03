@@ -3,6 +3,14 @@
 A collection of Linux kernel rootkits found across the internet taken and put together, with a short report on how they work.
 The README's in each folder contain the report about the rootkit sample.
 
+## Table of Contents
+- [linux-rootkits](#linux-rootkits)
+  - [Table of Contents](#table-of-contents)
+  - [Rootkits](#rootkits)
+  - [Features Descriptions](#features-descriptions)
+  - [Test Environment](#test-environment)
+  - [Disclaimer](#disclaimer)
+
 ## Rootkits 
 
 |Name|Short Description|link to orignal repo|
@@ -18,7 +26,7 @@ If you plan to download the latest version of these rootkits please download the
 |Name|Short Description|Rootkits|links to code samples|
 |:-:|:-:|:-:|:-:|
 |Finding Syscall Table address (1)| Search memory for the pointer table! using a address of syscall function (eg. close) as reference|[Puszek](Puszek/)| [In Puszek](Puszek/rootkit.c#L1004)|
-|Function Hooking (1)| Get the address of the function to be hooked and then Modify CR0 to remove write protect bit and then add a jump instruction to the hooked function| [Khook](KHmhook/) and [Reptile (uses Khook)](Reptile/) | [in Khook](Khook/x86/hook.c#L75) and [detailed explanation](Khook/README.md)|
+|Function Hooking (1)| Get the address of the function to be hooked and then Modify CR0 to remove write protect bit and then add a jump instruction to the hooked function| [Khook](Khook/) and [Reptile (uses Khook)](Reptile/) | [in Khook](Khook/x86/hook.c#L75) and [detailed explanation](Khook/README.md)|
 |Syscall Table Hooking (1)|Modify CR0 to remove write protect bit and change syscall table|[Puszek](Puszek/)|[In Puszek](Puszek/rootkit.c#L1081)|
 |Syscall Table Hooking (2)|Make Syscall table writeable and then modify it|[Puszek](Puszek/)| [In Puszek](Puszek/rootkit.c#L133)|
 |Syscall Table Hooking (3)|Hook the syscall functions by using the Function Hooking(1) Technique| [Reptile (uses Khook)](Reptile/)| [In Reptile](Reptile/kernel/main.c#L76) | 
