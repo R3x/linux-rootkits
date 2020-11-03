@@ -16,8 +16,9 @@ The README's in each folder contain the report about the rootkit sample.
 |Name|Short Description|link to orignal repo|
 |:-:|:-:|:-:|
 |[Puszek](Puszek/)|rootkit which can log requests and prevent itself from being rmmod'd|[Eternal's repo](https://github.com/Eterna1/puszek-rootkit)|
-|[Reptile](Reptile/)|rootkit which can give root privs to users and a backdoor| [f0rb1dd3n's repo](https://github.com/f0rb1dd3n/Reptile)|
+|[Reptile](Reptile/)| A highly configurable and sophisticated rootkit which can give root privs to users and a backdoor| [f0rb1dd3n's repo](https://github.com/f0rb1dd3n/Reptile)|
 |[Khook](Khook/)| (Not a rootkit) but an engine that can be used to hook functions, also mentioned here since it's used by rootkits to hook functions| [milabs's repo](https://github.com/milabs/khook)|
+|[rkduck](rkduck/)| A rootkit which can hide files and record key strokes, also is configurable after installation | [QuokkaLight's repo](https://github.com/QuokkaLight/rkduck)|
 
 If you plan to download the latest version of these rootkits please download them from their original repo, as it would be the latest version.
 
@@ -25,8 +26,9 @@ If you plan to download the latest version of these rootkits please download the
 
 |Name|Short Description|Rootkits|links to code samples|
 |:-:|:-:|:-:|:-:|
-|Finding Syscall Table address (1)| Search memory for the pointer table! using a address of syscall function (eg. close) as reference|[Puszek](Puszek/)| [In Puszek](Puszek/rootkit.c#L1004)|
-|Function Hooking (1)| Get the address of the function to be hooked and then Modify CR0 to remove write protect bit and then add a jump instruction to the hooked function| [Khook](Khook/) and [Reptile (uses Khook)](Reptile/) | [in Khook](Khook/x86/hook.c#L75) and [detailed explanation](Khook/README.md)|
+|Finding Syscall Table address (1)| Search memory for the pointer table! using a address of syscall function (eg. close) as reference|[Puszek](Puszek/) and [rkduck](rkduck/)| [In Puszek](Puszek/rootkit.c#L1004) and [in rkduck](rkduck/syscalls.c#L3)|
+|Function Hooking (1)| Get the address of the function to be hooked and then Modify CR0 to remove write protect bit and then add a jump instruction to a stub| [Khook](Khook/) and [Reptile (uses Khook)](Reptile/) | [in Khook](Khook/x86/hook.c#L75) and [detailed explanation](Khook/README.md)|
+|Function Hooking (2)| Get the address of the function to be hooked and then map the page as readable and replace it with a jumo to the new function| [rkduck](rkduck/)| [in rkduck](rkduck/vfs.c#L6)|
 |Syscall Table Hooking (1)|Modify CR0 to remove write protect bit and change syscall table|[Puszek](Puszek/)|[In Puszek](Puszek/rootkit.c#L1081)|
 |Syscall Table Hooking (2)|Make Syscall table writeable and then modify it|[Puszek](Puszek/)| [In Puszek](Puszek/rootkit.c#L133)|
 |Syscall Table Hooking (3)|Hook the syscall functions by using the Function Hooking(1) Technique| [Reptile (uses Khook)](Reptile/)| [In Reptile](Reptile/kernel/main.c#L76) | 
