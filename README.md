@@ -30,7 +30,7 @@ If you plan to download the latest version of these rootkits please download the
 |Function Hooking (1)| Get the address of the function to be hooked and then Modify CR0 to remove write protect bit and then add a jump instruction to a stub| [Khook](Khook/) and [Reptile (uses Khook)](Reptile/) | [in Khook](Khook/x86/hook.c#L75) and [detailed explanation](Khook/README.md)|
 |Function Hooking (2)| Get the address of the function to be hooked and then map the page as readable and replace it with a jumo to the new function| [rkduck](rkduck/)| [in rkduck](rkduck/vfs.c#L6)|
 |Syscall Table Hooking (1)|Modify CR0 to remove write protect bit and change syscall table|[Puszek](Puszek/)|[In Puszek](Puszek/rootkit.c#L1081)|
-|Syscall Table Hooking (2)|Make Syscall table writeable and then modify it|[Puszek](Puszek/)| [In Puszek](Puszek/rootkit.c#L133)|
+|Syscall Table Hooking (2)|Get the page where the Syscall table is mapped, and set that page as writeable and then modify it|[Puszek](Puszek/)| [In Puszek](Puszek/rootkit.c#L133)|
 |Syscall Table Hooking (3)|Hook the syscall functions by using the Function Hooking(1) Technique| [Reptile (uses Khook)](Reptile/)| [In Reptile](Reptile/kernel/main.c#L76) | 
 |Hide Rootkit|Hook open syscall and modify the contents of the files (/proc/modules) which contain the name of the rooktit|[Puszek](Puszek/)| [In Puszek](Puszek/rootkit.c#L783)|
 |Interactive Control| Implementing an IOCTL which manages the features of the rootkit and allows the user to send it commands|[Reptile](Reptile/)| [In Reptile](Reptile/kernel/main.c#L369)|
